@@ -18,6 +18,8 @@ namespace MvcCorePaginacionRegistros.Controllers
             return View();
         }
 
+        #region PAGINAR GRUPO EMPLEADOS
+
         public async Task<IActionResult>
             PaginarGrupoEmpleados(int? posicion)
         {
@@ -31,6 +33,8 @@ namespace MvcCorePaginacionRegistros.Controllers
                 await this.repo.GetGrupoEmpleadosAsync(posicion.Value);
             return View(empleados);
         }
+
+        #endregion
 
         #region PAGINAR GRUPO DEPARTAMENTOS
         public async Task<IActionResult>
