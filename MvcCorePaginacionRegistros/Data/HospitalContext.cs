@@ -10,5 +10,7 @@ namespace MvcCorePaginacionRegistros.Data
 
         public DbSet<Departamento> Departamentos { get; set; }
         public DbSet<Empleado> Empleados { get; set; }
+        public DbSet<VistaDepartamento> VistaDepartamentos { get; set; }
+        public DbSet<VistaEmpleado> VistaEmpleados { get; set; }
     }
 }
