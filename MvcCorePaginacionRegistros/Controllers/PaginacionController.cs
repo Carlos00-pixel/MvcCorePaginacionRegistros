@@ -44,8 +44,9 @@ namespace MvcCorePaginacionRegistros.Controllers
             }
             else
             {
-                List<Empleado> empleados =
+                ModelPaginarEmpleados model =
                     await this.repo.GetEmpleadosOficioAsync(posicion.Value, oficio);
+                List<Empleado> empleados = model.Empleados;
                 int numeroregistros = this.repo.GetNumeroEmpleadosOficio(oficio);
                 ViewData["REGISTROS"] = numeroregistros;
                 ViewData["OFICIO"] = oficio;
@@ -58,8 +59,9 @@ namespace MvcCorePaginacionRegistros.Controllers
         public async Task<IActionResult>
             EmpleadosOficio(string oficio)
         {
-            List<Empleado> empleados =
+            ModelPaginarEmpleados model =
                 await this.repo.GetEmpleadosOficioAsync(1, oficio);
+            List<Empleado> empleados = model.Empleados;
             int numRegistros = this.repo.GetNumeroEmpleadosOficio(oficio);
             ViewData["REGISTROS"] = numRegistros;
             ViewData["OFICIO"] = oficio;

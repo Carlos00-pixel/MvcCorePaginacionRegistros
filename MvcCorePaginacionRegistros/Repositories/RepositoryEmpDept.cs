@@ -128,7 +128,7 @@ namespace MvcCorePaginacionRegistros.Repositories
             return consulta.ToList();
         }
 
-        public async Task<List<Empleado>>
+        public async Task<ModelPaginarEmpleados>
             GetEmpleadosOficioAsync(int posicion, string oficio)
         {
             string sql = "SP_GRUPO_EMPLEADOS_OFICIO @OFICIO, @POSICION, @NUMEROREGISTROS OUT";
@@ -143,7 +143,10 @@ namespace MvcCorePaginacionRegistros.Repositories
                 this.context.Empleados.FromSqlRaw(sql, pamoficio, pamposicion, pamregistros);
             List<Empleado> empleados = await consulta.ToListAsync();
             int registros = (int)pamregistros.Value;
-            return empleados;
+            return new ModelPaginarEmpleados
+            {
+                NumeroRegistros = registros, Empleados = empleados
+            };
         }
 
         public int GetNumeroEmpleadosOficio(string oficio)
