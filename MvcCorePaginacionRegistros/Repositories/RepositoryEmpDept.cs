@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MvcCorePaginacionRegistros.Data;
 using MvcCorePaginacionRegistros.Models;
+using System.Data;
 
 namespace MvcCorePaginacionRegistros.Repositories
 {
@@ -15,7 +16,23 @@ namespace MvcCorePaginacionRegistros.Repositories
 	        ISNULL(DEPT_NO, 0) AS DEPT_NO, DNOMBRE, LOC 
 	        FROM DEPT
         GO 
+
+
+
+        CREATE PROCEDURE SP_GRUPO_EMPLEADOS_OFICIO
+        (@OFICIO NVARCHAR(50),
+        @POSICION INT)
+        AS
+            SELECT * FROM 
+                (SELECT CAST(
+                    ROW_NUMBER() OVER (ORDER BY APELLIDO) AS INT) AS POSICION,
+                    EMP_NO, APELLIDO, OFICIO, SALARIO, DEPT_NO
+                FROM EMP 
+                WHERE OFICIO = @OFICIO) AS QUERY
+            WHERE QUERY.POSICION >= @POSICION AND QUERY.POSICION < (@POSICION + 3)
+        GO
     */
+
     #endregion
 
     public class RepositoryEmpDept
@@ -109,6 +126,29 @@ namespace MvcCorePaginacionRegistros.Repositories
                            where datos.IdDepartamento == idDepartamento
                            select datos;
             return consulta.ToList();
+        }
+
+        public async Task<List<Empleado>>
+            GetEmpleadosOficioAsync(int posicion, string oficio)
+        {
+            string sql = "SP_GRUPO_EMPLEADOS_OFICIO @OFICIO, @POSICION, @NUMEROREGISTROS OUT";
+            SqlParameter pamposicion =
+                new SqlParameter("@POSICION", posicion);
+            SqlParameter pamoficio =
+                new SqlParameter("@OFICIO", oficio);
+            SqlParameter pamregistros =
+                new SqlParameter("@NUMEROREGISTROS", -1);
+            pamregistros.Direction = ParameterDirection.Output;
+            var consulta =
+                this.context.Empleados.FromSqlRaw(sql, pamoficio, pamposicion, pamregistros);
+            List<Empleado> empleados = await consulta.ToListAsync();
+            int registros = (int)pamregistros.Value;
+            return empleados;
+        }
+
+        public int GetNumeroEmpleadosOficio(string oficio)
+        {
+            return this.context.Empleados.Where(z => z.Oficio == oficio).Count();
         }
 
         #endregion

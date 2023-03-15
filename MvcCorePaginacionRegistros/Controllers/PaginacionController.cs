@@ -34,6 +34,38 @@ namespace MvcCorePaginacionRegistros.Controllers
             return View(empleados);
         }
 
+        public async Task<IActionResult> 
+            EmpleadosOficio(int? posicion, string oficio)
+        {
+            if (posicion == null)
+            {
+                posicion = 1;
+                return View();
+            }
+            else
+            {
+                List<Empleado> empleados =
+                    await this.repo.GetEmpleadosOficioAsync(posicion.Value, oficio);
+                int numeroregistros = this.repo.GetNumeroEmpleadosOficio(oficio);
+                ViewData["REGISTROS"] = numeroregistros;
+                ViewData["OFICIO"] = oficio;
+                return View(empleados);
+            }
+            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult>
+            EmpleadosOficio(string oficio)
+        {
+            List<Empleado> empleados =
+                await this.repo.GetEmpleadosOficioAsync(1, oficio);
+            int numRegistros = this.repo.GetNumeroEmpleadosOficio(oficio);
+            ViewData["REGISTROS"] = numRegistros;
+            ViewData["OFICIO"] = oficio;
+            return View(empleados);
+        }
+
         #endregion
 
         #region PAGINAR GRUPO DEPARTAMENTOS
